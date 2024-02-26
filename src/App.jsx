@@ -1,88 +1,103 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 // edit add, delete, list show, 
-const todolist= []
+let dummy = [
+  {
+    id: 1,
+    task: 'task 1',
+  },
+  {
+    id: 2,
+    task: 'task 2',
+  },
+  {
+    id: 3,
+    task: 'task 3',
+  },
+  {
+    id: 4,
+    task: 'task 4',
+  }
+]
 function App() {
-  const [todo, setTodo] = useState(todolist);
-  const [text, setText] = useState();
-  const [show, setshow] = useState(false)
-  const [editable, seteditable] = useState(false)
-  const [editTask, setEditTask] = useState({})
+  const [Inp, setInp] = useState('');
+  const [data, setData] = useState(dummy);
+  const [show, setShow] =  useState(false);
+  const [editable, setEditable] = useState(false)
+  const [id, setId] = useState('');
+  const inputRef = useRef('');
 
-  function add (){
-    if(text === '') return;
-    let d = new Date().getMilliseconds();
-    console.log(d)
-    let newTask = {
-      id: d,
-      task: text,
+  // Adding/Edit new entry
+  const addData = (e) => {
+    if(Inp === '') {
+      alert('require text');
+      return
     }
-    setTodo([...todo,newTask ])
-    setshow(true);
-    setText('')
-    
+    e.preventDefault();
+    if(editable) {
+      let newData = data.map((item) => {
+          if (item.id === id){
+            return {...item, task: Inp}
+          }
+          return item;
+        });
+        setData(newData);
+    } else {
+      let uniqueId = new Date().getMilliseconds();
+      setData([...data, { id: uniqueId, task: Inp}])
+    }
+    setInp('');
+    setEditable(false);
+    inputRef.current.focus();
   }
-  function deleteTask (id){
-      let del = todo.filter((item) => item.id !== id)
-      setTodo([...del])
+
+  // Delete Entry
+  const deleteData = (id) => {
+    let filterData = data.filter((item) => item.id !== id);
+    setData(filterData);
   }
-  
-  function editthis(editid){
-    seteditable(true);
-    let txt = '';
-      let deleted =  todo.filter((item) => {
-         if(item.id === editid ){
-           txt = item.task;
-           return false;
-         }
-         return true
-       })
-       setTodo([...deleted])
-        // console.log(d)
-    setEditTask({id: editid, task: txt})
-    // console.log(editTask)
+
+  // Edit Entry
+  const edit = (change) => {
+    setId(change.id);
+    setInp(change.task)
+    setEditable(true);
+    inputRef.current.focus();
+
   }
-  function edit (){
-    let d = {
-      id: editTask.id,
-      task: editTask.task,
-    };
-    // console.log(d)
-    setTodo([...todo, d])
-    // console.log(todo)
-    // setEditTask('');
-    seteditable(false)
-  }
+
   return (
     <>
-    <div className='body' >
-      
-    <div className='button'>
-      <button onClick={() => setshow(!show)}>list show</button>
-      {editable
-        ? <button onClick={() => edit()}>edit</button>
-         :<button onClick={() => add()}>add</button>
-       }
-      
-    </div>
-    <div className='input'>
-      
-      {editable 
-      ? <input type='text' required value={editTask.task} onChange={(e) => setEditTask({...editTask, task: e.target.value})}/> 
-      : <input type='text' required value={text} onChange={(e) => setText(e.target.value)}/>}
-    </div>
-    <div className='list'>
-      { show ? todo.map((item) =>
-      <div className='lists   '>
-        <p>{item.task}</p> 
-        <button onClick={() => deleteTask(item.id)}>delete</button>
-        <button onClick={() => editthis(item.id)}>edit</button>
+      <div className='main' >
+        <div className='mainForm' >
+          <form>
+            <div>
+              <button onClick={() => setShow(!show)} >show List</button>
+            </div>
+            <div>
+               <input 
+                    ref={inputRef}
+                    type="text" 
+                    onChange={(e) => setInp(e.target.value)}   
+                    value={Inp} 
+                 />
+              </div>
+           <button type='submit' onClick={addData} > Add</button>
+          </form>
         </div>
-      
-      ): ''}
-    </div>
-    </div>
+        <div className='mainList' hidden={show} >
+              {data.map((item) => {
+                return <div key={item.id}  className={`${editable && (id === item.id) ? 'opc' : ''}`}   >
+                  <p>{item.task}</p>
+                  <div>
+                      <button onClick={() => deleteData(item.id)} >Delete</button>
+                      <button onClick={() => edit(item)} >Edit</button>
+                  </div>
+                </div>
+              })}
+        </div>
+      </div>
     </>
-  );
+  )
 }
 
 export default App;
