@@ -30,6 +30,9 @@ form {
   align-items: center;
   justify-content: center;
 }
+.mainForm {
+  display: flex;
+}
 button {
   padding: 5px 10px;
 }

@@ -69,10 +69,10 @@ function App() {
     <>
       <div className='main' >
         <div className='mainForm' >
-          <form>
             <div>
               <button onClick={() => setShow(!show)} >show List</button>
             </div>
+          <form>
             <div>
                <input 
                     ref={inputRef}
