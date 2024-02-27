@@ -28,11 +28,11 @@ function App() {
 
   // Adding/Edit new entry
   const addData = (e) => {
+    e.preventDefault();
     if(Inp === '') {
       alert('require text');
       return
     }
-    e.preventDefault();
     if(editable) {
       let newData = data.map((item) => {
           if (item.id === id){
@@ -89,8 +89,14 @@ function App() {
                 return <div key={item.id}  className={`${editable && (id === item.id) ? 'opc' : ''}`}   >
                   <p>{item.task}</p>
                   <div>
-                      <button onClick={() => deleteData(item.id)} >Delete</button>
-                      <button onClick={() => edit(item)} >Edit</button>
+                    <button disabled={id === item.id} onClick={() => deleteData(item.id)} >Delete</button>
+                      {
+                        (id !== item.id) 
+                        ? <button onClick={() => edit(item)} >Edit</button>
+                        : <button onClick={() => { setId(''); setInp('');}} >Cancel</button>
+                      }
+                      
+                      
                   </div>
                 </div>
               })}
